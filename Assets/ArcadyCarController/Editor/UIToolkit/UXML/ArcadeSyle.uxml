@@ -1,0 +1,69 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/ArcadyCarController/Editor/UIToolkit/StyleSheet/StyleSheet.uss?fileID=7433441132597879392&amp;guid=bcfdafeeb3d4dac4f9cd4d66c554f156&amp;type=3#StyleSheet" />
+    <ui:VisualElement name="Header" focusable="false" style="flex-grow: initial; flex-direction: column; flex-wrap: wrap; display: flex; visibility: visible; overflow: visible; flex-shrink: 1;">
+        <ui:Label tabindex="-1" text="Arcady Car &#10;Controller" parse-escape-sequences="true" display-tooltip-when-elided="true" style="color: rgb(0, 135, 255); -unity-font: resource(&apos;Font/homevideo&apos;); -unity-font-definition: initial; -unity-font-style: bold; font-size: 42px; align-self: center; margin-left: 0; margin-top: 10px; -unity-text-align: upper-left; white-space: nowrap;" />
+    </ui:VisualElement>
+    <ui:VisualElement name="References" style="flex-grow: 1; flex-wrap: nowrap; flex-basis: auto; padding-top: 0; padding-bottom: 0; padding-right: 0; padding-left: 0; margin-top: 0;">
+        <ui:Label tabindex="-1" text="References" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Header" class="bg" style="font-size: 24px; -unity-text-align: upper-center; padding-right: 0; top: 15px;" />
+        <ui:VisualElement name="Vars" class="section bg" style="flex-grow: 1; left: 0; top: 5px; right: 0; bottom: 0; margin-top: 25px;">
+            <uie:PropertyField name="InputReader" binding-path="inputReader" label="Input Reader" />
+            <uie:PropertyField name="FrontWheels" binding-path="frontWheels" label="Front Wheels" />
+            <uie:PropertyField name="RearWheels" binding-path="rearWheels" label="Rear Wheels" />
+            <uie:PropertyField binding-path="carBody" label="Car Body" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="CarProperties" style="flex-grow: 1; margin-top: 0;">
+        <ui:Label tabindex="-1" text="Car Properties" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Header" class="bg" style="font-size: 24px; -unity-text-align: upper-center; top: 15px;" />
+        <ui:VisualElement name="Var" class="bg" style="flex-grow: 1; top: auto; justify-content: center; align-self: auto; margin-top: 25px;">
+            <uie:PropertyField name="MaxSpeed" binding-path="maxSpeed" label="Max Speed" />
+            <uie:PropertyField binding-path="accelerationForce" label="Acceleration Force" name="AccelerationForce" />
+            <uie:PropertyField binding-path="turnTorque" label="Turn Torque" name="TurnTorque" />
+            <uie:PropertyField binding-path="brakeForce" label="Brake Force" name="BrakeForce" />
+            <uie:PropertyField binding-path="accelerationCurve" label="Acceleration Curve" name="AccelerationCruve" />
+            <uie:PropertyField name="TurnCurve" binding-path="turnCurve" label="Turn Curve" />
+            <uie:PropertyField binding-path="driftingCurve" label="Drifting Curve" name="DriftCurve" />
+            <uie:PropertyField binding-path="accelerationPoint" label="Acceleration Point" name="AccelerationPointt" />
+            <uie:PropertyField name="DriftForce" label="Drift Force" binding-path="driftForce" />
+            <uie:PropertyField binding-path="driftControl" label="Drift Control" name="DriftControl" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement style="flex-grow: 1; visibility: visible; display: none;" />
+    <ui:VisualElement name="AerodynamicsProperties" style="flex-grow: 1;">
+        <ui:Label tabindex="-1" text="Aerodynamics properties" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Header" class="bg" style="font-size: 24px; top: 15px; -unity-text-align: upper-center;" />
+        <ui:VisualElement name="var" class="bg" style="flex-grow: 1; margin-top: 25px;">
+            <uie:PropertyField name="DownForce" binding-path="downForce" label="Down Force" />
+            <uie:PropertyField binding-path="sideGrip" label="SideGrip" name="SideGrip" />
+            <uie:PropertyField name="Gravitty" binding-path="gravity" label="Gravity" />
+            <uie:PropertyField binding-path="maxBodyTiltAngle" label="Max Body TIlt Angle" name="MaxBodyTIltAngle" />
+            <uie:PropertyField binding-path="minSpeedThreshold" label="Minimum Speed Threshold" name="MinSpeedThreshold" />
+            <uie:PropertyField name="MaxSpeedThreshold" binding-path="maxSpeedThreshold" label="Maximum Speed Threshold" />
+            <uie:PropertyField binding-path="adjustedCenterOfMassOffset" label="Adjusted Center Of Mass Offset" name="AdjustedCenterOfMassOffset" />
+            <uie:PropertyField binding-path="centerOfMassGrounded" label="Center Of Mass Grounded" name="CenterOfMassGrounded" />
+            <uie:PropertyField name="CenterOfMassAirborne" binding-path="centerOfMassAirborne" label="Center Of Mass Airborne" />
+            <uie:PropertyField binding-path="dragCoefficient" label="Drag Coefficient" name="DragCoefficient" />
+            <uie:PropertyField name="BrakingCoefficient" label="Braking Coefficient" binding-path="brakingCoefficient" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="Visuals" style="flex-grow: 1;">
+        <ui:Label tabindex="-1" text="Visuals" parse-escape-sequences="true" display-tooltip-when-elided="true" class="bg" style="top: 15px; font-size: 24px; -unity-text-align: upper-center;" />
+        <ui:VisualElement name="Var" class="bg" style="flex-grow: 1; margin-top: 25px;">
+            <uie:PropertyField binding-path="sidewaysTilt" label="Sideways Tilt" name="SidewaysTitlt" />
+            <uie:PropertyField binding-path="frontTilt" label="Front Tilt" name="FrontTilt" />
+            <uie:PropertyField name="SidewaysTiltSpeed" binding-path="sidewaysTiltSpeed" label="Sideways TIlt Speed" />
+            <uie:PropertyField binding-path="wheelRotationSpeed" label="Wheel Rotation Speed" name="WheelRotationSpeed" />
+            <uie:PropertyField binding-path="wheelSteeringSmoothness" label="Wheel Steering Smoothness" name="WheelSteeringSmoothness" />
+            <uie:PropertyField binding-path="engineAudioSource" label="Engine Audio Source" name="EngineAudioSource" />
+            <uie:PropertyField binding-path="driftAudioSource" label="Drift Audio Source" name="DriftAudioSource" />
+            <uie:PropertyField binding-path="minEnginePitch" label="Minimum Engine Pitch" name="MinEnginePitch" />
+            <uie:PropertyField binding-path="maxEnginePitch" label="Maximum Engine Pitch" name="MaxEnginePitchs" />
+            <uie:PropertyField binding-path="driftTrails" label="Drift Trails" name="DriftTrails" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="GroundCheck" style="flex-grow: 1;">
+        <ui:Label tabindex="-1" text="GroundCheck" parse-escape-sequences="true" display-tooltip-when-elided="true" class="bg" style="font-size: 24px; top: 15px; -unity-text-align: upper-center;" />
+        <ui:VisualElement name="var" class="bg" style="flex-grow: 1; margin-top: 25px;">
+            <uie:PropertyField name="GroundCheck" binding-path="groundCheck" label="Ground Check&#10;" />
+            <uie:PropertyField name="GroundCheckDistance" binding-path="groundCheckDistance" label="Ground Check Distance" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
