@@ -1,0 +1,16 @@
+{
+  "name": "com.randomvariable.arcadycarcontroller",
+  "version": "1.0.0",
+  "displayName": "Arcady Car Controller",
+  "description": "A customizable arcade-y style car controller for unity !",
+  "dependencies":
+  {
+    "com.unity.cinemachine": "2.10.1",
+    "com.unity.inputsystem": "1.7.0",
+    "com.unity.probuilder" : "5.2.2"
+  },
+  "author":
+  {
+    "name": "RandomVariable"
+  }
+}
