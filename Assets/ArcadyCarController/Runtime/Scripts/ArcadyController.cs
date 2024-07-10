@@ -1,20 +1,21 @@
 using UnityEngine;
+using Cinemachine;
 
 namespace Arcady
 {
     public class ArcadyController : MonoBehaviour
     {
+        [Header("References")]
         [SerializeField] private InputReader inputReader;
         [Space(5f)]
         [SerializeField] private Transform[] frontWheels;
         [SerializeField] private Transform[] rearWheels;
         [SerializeField] private Transform carBody;
         
-        // Car Properties
+        [Header("Car Properties")]
         [SerializeField] private float maxSpeed;
         [SerializeField] private float accelerationForce;
         [SerializeField] private float turnTorque;
-        [SerializeField] private float brakeForce;
         [Space(5f)]
         [SerializeField] private AnimationCurve accelerationCurve;
         [SerializeField] private AnimationCurve turnCurve;
@@ -25,7 +26,7 @@ namespace Arcady
         [SerializeField] private float driftForce;
         [SerializeField] private float driftControl;
         
-        // Aerodynamics
+        [Header("Aerodynamics")]
         [SerializeField, Range(50f, 150f)] private float downForce = 100f;
         [SerializeField, Range(5f, 30f)] private float sideGrip = 15f;
         [Space(5f)]
@@ -42,7 +43,7 @@ namespace Arcady
         [SerializeField] private float dragCoefficient = 1f;
         [SerializeField] private float brakingCoefficient = 0.6f;
 
-        // Visuals
+        [Header("Visuals")]
         [SerializeField] private float sidewaysTilt;
         [SerializeField] private float frontTilt;
         [SerializeField] private float sidewaysTiltSpeed;
@@ -57,7 +58,18 @@ namespace Arcady
         [Space(5f)]
         [SerializeField] private TrailRenderer[] driftTrails;
         
-        // Ground Check
+        [Header("Vehicle Camera")]
+        [SerializeField] private CinemachineVirtualCamera vehicleCamera;
+        [Space(5f)]
+        [SerializeField,Range(70f, 90f)] private float maxCameraFOV;
+        [SerializeField,Range(30f, 60f)] private float minCameraFOV;
+        [Space(5f)]
+        [SerializeField] private float maxShakeAmplitude;
+        [SerializeField] private float minShakeAmplitude;
+        [SerializeField] private float maxShakeFrequency;
+        [SerializeField] private float minShakeFrequency;
+        
+        [Header("Ground Check")]
         [SerializeField] private Transform groundCheck;
         [SerializeField] private float groundCheckDistance;
         
@@ -118,6 +130,7 @@ namespace Arcady
         private void Update()
         {
             IsGrounded();
+            CameraAdjustments();
             ApplyVisuals();
         }
 
@@ -155,7 +168,7 @@ namespace Arcady
             {
                 _carRb.constraints = RigidbodyConstraints.FreezeRotationX;
         
-                var newZ = Mathf.SmoothDamp(_carRb.velocity.z, 0, ref _breakVelocity,IsDrifting() ? 50f : 10f);
+                var newZ = Mathf.SmoothDamp(_carRb.velocity.z, 0, ref _breakVelocity,1f);
                 _carRb.velocity = new Vector3(_carRb.velocity.x, _carRb.velocity.y, newZ);
             }
             else
@@ -240,6 +253,25 @@ namespace Arcady
 
         #endregion
 
+        #region Vehicle Camera
+
+        private void CameraAdjustments()
+        {
+            // Adjust FOV based on speed
+            float speedFactor = _carVelocity.magnitude / maxSpeed;
+            float targetFOV = Mathf.Lerp(minCameraFOV, maxCameraFOV, speedFactor);
+            vehicleCamera.m_Lens.FieldOfView = Mathf.Lerp(vehicleCamera.m_Lens.FieldOfView, targetFOV, Time.deltaTime * 2f);
+
+            // Adjust camera shake based on speed
+            float shakeAmplitude = Mathf.Lerp(minShakeAmplitude, maxShakeAmplitude, speedFactor);
+            float shakeFrequency = Mathf.Lerp(minShakeFrequency, maxShakeFrequency, speedFactor);
+            CinemachineBasicMultiChannelPerlin noise = vehicleCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+            noise.m_AmplitudeGain = shakeAmplitude;
+            noise.m_FrequencyGain = shakeFrequency;
+        }
+
+        #endregion
+
         #region Visuals
 
         private void ApplyVisuals()
@@ -314,6 +346,12 @@ namespace Arcady
         private bool IsDrifting()
         {
             return Mathf.Abs(_carVelocity.x) > DriftThreshold && Mathf.Abs(inputReader.Move.x) > 0.1f && Mathf.Abs(inputReader.Move.y) > 0.1f && IsGrounded() && _carVelocity.magnitude / maxSpeed > 0.1f;
+        }
+
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawRay(groundCheck.position, -groundCheck.up * groundCheckDistance);
         }
     }
 }
