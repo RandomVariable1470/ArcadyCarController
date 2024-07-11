@@ -11,14 +11,18 @@ namespace Arcady
         [SerializeField] private Transform[] frontWheels;
         [SerializeField] private Transform[] rearWheels;
         [SerializeField] private Transform carBody;
+        [Space(5f)]
+        [SerializeField] private CinemachineVirtualCamera vehicleCamera;
         
         [Header("Car Properties")]
         [SerializeField] private float maxSpeed = 70f;
         [SerializeField] private float accelerationForce= 100f;
+        [SerializeField] private float decelerationForce= 50f;
         [SerializeField] private float turnTorque = 50f;
         [Space(5f)]
         [SerializeField] private AnimationCurve accelerationCurve;
         [SerializeField] private AnimationCurve turnCurve;
+        [SerializeField] private AnimationCurve reversingCurve;
         [SerializeField] private AnimationCurve driftingCurve;
         [Space(5f)] 
         [SerializeField] private Transform accelerationPoint;
@@ -31,14 +35,11 @@ namespace Arcady
         [SerializeField, Range(50f, 150f)] private float downForce = 100f;
         [SerializeField, Range(5f, 30f)] private float sideGrip = 15f;
         [Space(5f)]
-        [SerializeField, Range(0.1f, 30f)] private float gravity = 5f;
-        [Space(5f)]
         [SerializeField] private float maxBodyTiltAngle = 20f;
         [Space(5f)]
         [SerializeField] private float minSpeedThreshold = 20f;
         [SerializeField] private float maxSpeedThreshold = 60f;
         [SerializeField] private float adjustCenterOfMassOffset = -0.5f;
-        [SerializeField] private Transform centerOfMassGrounded;
         [SerializeField] private Transform centerOfMassAirborne;
         [Space(5f)]
         [SerializeField] private float dragCoefficient = 1f;
@@ -55,17 +56,7 @@ namespace Arcady
         [SerializeField] private AudioSource driftAudioSource;
         [SerializeField, Range(0f, 1f)] private float minEnginePitch = 0.5f;
         [SerializeField, Range(1f, 3f)] private float maxEnginePitch = 3f;
-        [Space(5f)]
-        [SerializeField] private TrailRenderer[] driftTrails;
-        
-        [Header("Vehicle Camera")]
-        [SerializeField] private CinemachineVirtualCamera vehicleCamera;
-        [Space(5f)]
-        [SerializeField] private float maxShakeAmplitude = 0.25f;
-        [SerializeField] private float minShakeAmplitude = 0.05f;
-        [SerializeField] private float maxShakeFrequency = 0.2f;
-        [SerializeField] private float minShakeFrequency = 0.025f;
-        
+
         [Header("Ground Check")]
         [SerializeField] private Transform groundCheck;
         [SerializeField] private float groundCheckDistance;
@@ -77,12 +68,10 @@ namespace Arcady
 
         private float _speed;
         private float _accelerationNetForce;
+        private float _decelerationNetForce;
         private float _steeringNetForce;
         private float _steerAngle;
         private float _breakVelocity;
-
-        private float _groundDrag;
-        private float _airDrag;
         
         private float _targetFrontTiltAngle;
         private float _targetSideTiltAngle;
@@ -93,12 +82,6 @@ namespace Arcady
         private RaycastHit _groundRaycastHit;
         private Coroutine _frontAndBackTiltCoroutine;
 
-        private const float TerminalVelocity = 63.25f; // This terminal velocity is for a 150 kg car gravity as 9.81f
-                                                       // p 1.225f cd is 0.3
-                                                       // and an is 4 these are apporx values
-                                                       // but u can adjust bases on ur needs and put ur
-                                                       // terminal velocity value here
-
         private void OnEnable()
         {
             inputReader.Enable();
@@ -107,12 +90,7 @@ namespace Arcady
         private void Start()
         {
             _carRb = GetComponent<Rigidbody>();
-            _originalCenterOfMass = centerOfMassGrounded.localPosition;
-            
-            _groundDrag = gravity / TerminalVelocity;
-            _carRb.drag = _groundDrag;
-
-            _airDrag = _carRb.drag * 10f;
+            _originalCenterOfMass = _carRb.centerOfMass;
         }
         
         private void OnDisable()
@@ -123,7 +101,7 @@ namespace Arcady
         private void Update()
         {
             IsGrounded();
-            //CameraAdjustments();
+            CameraAdjustments();
             ApplyVisuals();
             AdjustCenterOfMass();
         }
@@ -152,9 +130,8 @@ namespace Arcady
 
         private void HandleGroundedMovement()
         {
-            _carRb.drag = _groundDrag;
-
             _accelerationNetForce = accelerationCurve.Evaluate(_speed) * accelerationForce;
+            _decelerationNetForce = reversingCurve.Evaluate(_speed) * decelerationForce;
             _steeringNetForce = turnCurve.Evaluate(Mathf.Abs(_speed)) * Mathf.Sign(_carVelocity.z) * turnTorque;
 
             if (inputReader.Brake > 0.1f)
@@ -165,11 +142,15 @@ namespace Arcady
             }
             else
             {
-                _steerAngle = inputReader.Move.x * _steeringNetForce;
                 _carRb.constraints = RigidbodyConstraints.None;
+                
+                _steerAngle = inputReader.Move.x * _steeringNetForce;
 
                 _carRb.AddForceAtPosition(carBody.forward * (_accelerationNetForce * inputReader.Move.y), accelerationPoint.position, ForceMode.Acceleration);
-                if (_speed > 0.1f) _carRb.AddTorque(carBody.up * _steerAngle, ForceMode.Acceleration);
+                if (_speed > 0.1f)
+                {
+                    _carRb.AddTorque(carBody.up * _steerAngle, ForceMode.Acceleration);
+                }
             }
         }
 
@@ -188,8 +169,6 @@ namespace Arcady
         
         private void ApplyAirborneMovement()
         {
-            _carRb.drag = _airDrag;
-
             float airborneSteerAngle = inputReader.Move.x * _steeringNetForce; 
             _carRb.AddTorque(carBody.up * airborneSteerAngle, ForceMode.Acceleration);
         }
@@ -200,19 +179,14 @@ namespace Arcady
 
         private void SidewaysDrag()
         {
-            if (_carVelocity.magnitude > 1)
+            if (_carVelocity.magnitude > 1f)
             {
-                // Calculate the friction angle based on the car's tilt
-                float frictionAngle = (-Vector3.Angle(transform.up, Vector3.up) / 90f) + 1;
-
-                // Calculate the stabilizing force
-                Vector3 stabilizingForce = Vector3.ProjectOnPlane(transform.right, Vector3.up) * (dragCoefficient * frictionAngle * 100 * -_carVelocity.normalized.x);
-
-                // Apply the stabilizing force at the car's center of mass
-                _carRb.AddForceAtPosition(stabilizingForce, _carRb.worldCenterOfMass, ForceMode.Acceleration);
+                float dragMagnitude = -_lateralVelocity.magnitude * inputReader.Brake > 0.1f ? brakingCoefficient : dragCoefficient;
+            
+                Vector3 dragForce = _lateralVelocity.normalized * dragMagnitude;
+                _carRb.AddForceAtPosition(dragForce, _carRb.worldCenterOfMass, ForceMode.Acceleration);
             }
         }
-
         
         private void ApplyNormalGroundTilt()
         {
@@ -258,8 +232,8 @@ namespace Arcady
 
         private void CameraAdjustments()
         {
-            float shakeAmplitude = Mathf.Lerp(minShakeAmplitude, maxShakeAmplitude, _speed);
-            float shakeFrequency = Mathf.Lerp(minShakeFrequency, maxShakeFrequency, _speed);
+            float shakeAmplitude = Mathf.Lerp(0, 0.025f, _speed);
+            float shakeFrequency = Mathf.Lerp(0, 0.025f, _speed);
             
             CinemachineBasicMultiChannelPerlin noise = vehicleCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
             noise.m_AmplitudeGain = shakeAmplitude;
@@ -275,7 +249,6 @@ namespace Arcady
             WheelVisuals();
             BodyTilting();
             AudioEffect();
-            VFXEffects();
         }
         
         private void BodyTilting()
@@ -322,14 +295,6 @@ namespace Arcady
             driftAudioSource.mute = !IsDrifting();
         }
         
-        private void VFXEffects()
-        {
-            foreach (var driftTrail in driftTrails)
-            {
-                driftTrail.emitting = IsDrifting();
-            }
-        }
-
         #endregion
         
         private bool IsGrounded()
@@ -341,7 +306,7 @@ namespace Arcady
 
         private bool IsDrifting()
         {
-            return Mathf.Abs(_carVelocity.x) > driftSteerThreshold && IsGrounded() && _speed > 0.5f;
+            return Mathf.Abs(_carVelocity.x) > driftSteerThreshold && IsGrounded() && Mathf.Abs(_carVelocity.z) / maxSpeed < maxSpeed - 10f;
         }
 
         private void OnDrawGizmos()
