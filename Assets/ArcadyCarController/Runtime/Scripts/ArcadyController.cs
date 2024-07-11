@@ -125,6 +125,7 @@ namespace Arcady
             IsGrounded();
             //CameraAdjustments();
             ApplyVisuals();
+            AdjustCenterOfMass();
         }
 
         private void FixedUpdate()
@@ -132,8 +133,6 @@ namespace Arcady
             _carVelocity = carBody.InverseTransformDirection(_carRb.velocity);
             _speed = _carVelocity.magnitude / maxSpeed;
             _lateralVelocity = Vector3.Project(_carRb.velocity, carBody.right);
-            
-            AdjustCenterOfMass();
             
             if (IsGrounded())
             {
@@ -201,11 +200,19 @@ namespace Arcady
 
         private void SidewaysDrag()
         {
-            float dragMagnitude = -_lateralVelocity.magnitude * inputReader.Brake > 0.1f ? brakingCoefficient : dragCoefficient;
-            
-            Vector3 dragForce = _lateralVelocity.normalized * dragMagnitude;
-            _carRb.AddForceAtPosition(dragForce, _carRb.worldCenterOfMass, ForceMode.Acceleration);
+            if (_carVelocity.magnitude > 1)
+            {
+                // Calculate the friction angle based on the car's tilt
+                float frictionAngle = (-Vector3.Angle(transform.up, Vector3.up) / 90f) + 1;
+
+                // Calculate the stabilizing force
+                Vector3 stabilizingForce = Vector3.ProjectOnPlane(transform.right, Vector3.up) * (dragCoefficient * frictionAngle * 100 * -_carVelocity.normalized.x);
+
+                // Apply the stabilizing force at the car's center of mass
+                _carRb.AddForceAtPosition(stabilizingForce, _carRb.worldCenterOfMass, ForceMode.Acceleration);
+            }
         }
+
         
         private void ApplyNormalGroundTilt()
         {
@@ -296,12 +303,12 @@ namespace Arcady
         
         private void WheelVisuals()
         {
-            float rotationAngle = Mathf.Abs(_carVelocity.z / maxSpeed) * Time.deltaTime * wheelRotationSpeed;
+            float rotationAngle = Mathf.Abs(_carVelocity.z / maxSpeed) * wheelRotationSpeed;
                 
             foreach (var wheel in frontWheels)
             {
                 wheel.localRotation = Quaternion.Slerp(wheel.localRotation, Quaternion.Euler(wheel.localRotation.eulerAngles.x, 
-                    _steerAngle, wheel.localRotation.eulerAngles.z), Time.deltaTime);
+                    _steerAngle, wheel.localRotation.eulerAngles.z), wheelRotationSpeed * Time.deltaTime);
             }
             foreach (var wheel in rearWheels)
             {
@@ -334,7 +341,7 @@ namespace Arcady
 
         private bool IsDrifting()
         {
-            return Mathf.Abs(_carVelocity.x) > driftSteerThreshold && IsGrounded() && _speed > 0.1f;
+            return Mathf.Abs(_carVelocity.x) > driftSteerThreshold && IsGrounded() && _speed > 0.5f;
         }
 
         private void OnDrawGizmos()
