@@ -39,6 +39,8 @@ namespace Arcady
         [SerializeField] private float adjustCenterOfMassOffset = -0.5f;
         [SerializeField] private Transform centerOfMassAirborne;
         [Space(5f)]
+        [SerializeField] private float gravity = 15f;
+        [Space(5f)]
         [SerializeField] private float dragCoefficient = 1f;
         [SerializeField] private float brakingCoefficient = 0.6f;
 
@@ -139,14 +141,14 @@ namespace Arcady
             else
             {
                 _carRb.constraints = RigidbodyConstraints.None;
-                
-                _steerAngle = inputReader.Move.x * _steeringNetForce;
-
                 _carRb.AddForceAtPosition(carBody.forward * (_accelerationNetForce * inputReader.Move.y), accelerationPoint.position, ForceMode.Acceleration);
-                if (_speed > 0.1f)
-                {
-                    _carRb.AddTorque(carBody.up * _steerAngle);  
-                }
+                
+            }
+            
+            _steerAngle = inputReader.Move.x * _steeringNetForce;
+            if (_speed > 0.1f)
+            {
+                _carRb.AddTorque(carBody.up * _steerAngle);  
             }
         }
 
@@ -165,7 +167,9 @@ namespace Arcady
         
         private void ApplyAirborneMovement()
         {
-            float airborneSteerAngle = inputReader.Move.x * _steeringNetForce; 
+            _carRb.AddForce(-transform.up * (gravity * _carRb.mass));
+            
+            float airborneSteerAngle = (inputReader.Move.x * _steeringNetForce) / 2f; 
             _carRb.AddTorque(carBody.up * airborneSteerAngle);
         }
 

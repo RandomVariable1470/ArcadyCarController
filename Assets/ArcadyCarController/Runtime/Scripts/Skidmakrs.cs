@@ -24,7 +24,7 @@ namespace Arcady
 
             if (_controller.IsGrounded())
             {
-                skidmark.emitting = Mathf.Abs(velocity.xs) > _controller.DriftSteerThreshold;
+                skidmark.emitting = Mathf.Abs(velocity.x) > _controller.DriftSteerThreshold;
             }
             else
             {
