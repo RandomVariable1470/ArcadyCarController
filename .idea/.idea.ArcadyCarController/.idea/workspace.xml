@@ -5,9 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="183c3f96-0786-423c-b7a0-f8b45f2010f1" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Assets/ArcadyCarController/Runtime/Scripts/Skidmakrs.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ArcadyCarController/Runtime/Scripts/Skidmakrs.cs.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.ArcadyCarController/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ArcadyCarController/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/ArcadyCarController/Runtime/Demo.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/ArcadyCarController/Runtime/Demo.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/ArcadyCarController/Runtime/Scripts/ArcadyController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/ArcadyCarController/Runtime/Scripts/ArcadyController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/TimeManager.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/TimeManager.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -103,6 +106,8 @@
       <workItem from="1720683941778" duration="1689000" />
       <workItem from="1720707232217" duration="4584000" />
       <workItem from="1720712507150" duration="448000" />
+      <workItem from="1720768125990" duration="4265000" />
+      <workItem from="1720774523517" duration="16000" />
     </task>
     <servers />
   </component>

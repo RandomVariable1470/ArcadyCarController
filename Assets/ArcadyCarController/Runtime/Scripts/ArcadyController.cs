@@ -1,5 +1,4 @@
 using UnityEngine;
-using Cinemachine;
 
 namespace Arcady
 {
@@ -11,8 +10,6 @@ namespace Arcady
         [SerializeField] private Transform[] frontWheels;
         [SerializeField] private Transform[] rearWheels;
         [SerializeField] private Transform carBody;
-        [Space(5f)]
-        [SerializeField] private CinemachineVirtualCamera vehicleCamera;
         
         [Header("Car Properties")]
         [SerializeField] private float maxSpeed = 70f;
@@ -29,7 +26,7 @@ namespace Arcady
         [Space(5f)]
         [SerializeField] private float driftForce = 30f;
         [SerializeField] private float driftControl = 0.5f;
-        [SerializeField] private float driftSteerThreshold = 15f;
+        [field: SerializeField] public float DriftSteerThreshold { get; private set; } = 15f;
         
         [Header("Aerodynamics")]
         [SerializeField, Range(50f, 150f)] private float downForce = 100f;
@@ -51,8 +48,8 @@ namespace Arcady
         [SerializeField] private float sidewaysTiltSpeed = 7.5f;
         [Space(5f)] 
         [SerializeField] private float wheelRotationSpeed = 30f;
-        [Space(5f)]
-        [SerializeField] private AudioSource engineAudioSource;
+
+        [Space(5f)] [SerializeField] private AudioSource engineAudioSource;
         [SerializeField] private AudioSource driftAudioSource;
         [SerializeField, Range(0f, 1f)] private float minEnginePitch = 0.5f;
         [SerializeField, Range(1f, 3f)] private float maxEnginePitch = 3f;
@@ -101,7 +98,6 @@ namespace Arcady
         private void Update()
         {
             IsGrounded();
-            CameraAdjustments();
             ApplyVisuals();
             AdjustCenterOfMass();
         }
@@ -130,9 +126,9 @@ namespace Arcady
 
         private void HandleGroundedMovement()
         {
-            _accelerationNetForce = accelerationCurve.Evaluate(_speed) * accelerationForce;
-            _decelerationNetForce = reversingCurve.Evaluate(_speed) * decelerationForce;
-            _steeringNetForce = turnCurve.Evaluate(Mathf.Abs(_speed)) * Mathf.Sign(_carVelocity.z) * turnTorque;
+            _accelerationNetForce = accelerationCurve.Evaluate(_speed) * accelerationForce * 1000f * Time.fixedDeltaTime;
+            _decelerationNetForce = reversingCurve.Evaluate(_speed) * decelerationForce * 1000f * Time.fixedDeltaTime;
+            _steeringNetForce = turnCurve.Evaluate(Mathf.Abs(_speed)) * Mathf.Sign(_carVelocity.z) * turnTorque * 1000f * Time.fixedDeltaTime;
 
             if (inputReader.Brake > 0.1f)
             {
@@ -149,7 +145,7 @@ namespace Arcady
                 _carRb.AddForceAtPosition(carBody.forward * (_accelerationNetForce * inputReader.Move.y), accelerationPoint.position, ForceMode.Acceleration);
                 if (_speed > 0.1f)
                 {
-                    _carRb.AddTorque(carBody.up * _steerAngle, ForceMode.Acceleration);
+                    _carRb.AddTorque(carBody.up * _steerAngle);  
                 }
             }
         }
@@ -170,7 +166,7 @@ namespace Arcady
         private void ApplyAirborneMovement()
         {
             float airborneSteerAngle = inputReader.Move.x * _steeringNetForce; 
-            _carRb.AddTorque(carBody.up * airborneSteerAngle, ForceMode.Acceleration);
+            _carRb.AddTorque(carBody.up * airborneSteerAngle);
         }
 
         #endregion
@@ -228,20 +224,6 @@ namespace Arcady
 
         #endregion
 
-        #region Vehicle Camera
-
-        private void CameraAdjustments()
-        {
-            float shakeAmplitude = Mathf.Lerp(0, 0.025f, _speed);
-            float shakeFrequency = Mathf.Lerp(0, 0.025f, _speed);
-            
-            CinemachineBasicMultiChannelPerlin noise = vehicleCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
-            noise.m_AmplitudeGain = shakeAmplitude;
-            noise.m_FrequencyGain = shakeFrequency;
-        }
-
-        #endregion
-
         #region Visuals
 
         private void ApplyVisuals()
@@ -281,7 +263,7 @@ namespace Arcady
             foreach (var wheel in frontWheels)
             {
                 wheel.localRotation = Quaternion.Slerp(wheel.localRotation, Quaternion.Euler(wheel.localRotation.eulerAngles.x, 
-                    _steerAngle, wheel.localRotation.eulerAngles.z), wheelRotationSpeed * Time.deltaTime);
+                    wheelRotationSpeed * inputReader.Move.x, wheel.localRotation.eulerAngles.z), wheelRotationSpeed * Time.deltaTime);
             }
             foreach (var wheel in rearWheels)
             {
@@ -297,7 +279,7 @@ namespace Arcady
         
         #endregion
         
-        private bool IsGrounded()
+        public bool IsGrounded()
         {
             bool grounded = Physics.Raycast(groundCheck.position, -transform.up, out _groundRaycastHit, groundCheckDistance);
             Debug.DrawLine(groundCheck.position, grounded ? _groundRaycastHit.point : groundCheck.position + -groundCheck.up * groundCheckDistance, grounded ? Color.red : Color.green);
@@ -306,7 +288,7 @@ namespace Arcady
 
         private bool IsDrifting()
         {
-            return Mathf.Abs(_carVelocity.x) > driftSteerThreshold && IsGrounded() && Mathf.Abs(_carVelocity.z) / maxSpeed < maxSpeed - 10f;
+            return Mathf.Abs(_carVelocity.x) > DriftSteerThreshold && IsGrounded() && Mathf.Abs(_carVelocity.z) / maxSpeed < maxSpeed - 10f;
         }
 
         private void OnDrawGizmos()
