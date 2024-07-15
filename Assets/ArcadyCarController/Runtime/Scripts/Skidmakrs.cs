@@ -6,6 +6,7 @@ namespace Arcady
     public class Skidmakrs : MonoBehaviour
     {
         [SerializeField] private TrailRenderer skidmark;
+        [SerializeField] private ParticleSystem burnOutSmoke;
 
         private Rigidbody _rb;
         private ArcadyController _controller;
@@ -25,6 +26,9 @@ namespace Arcady
             if (_controller.IsGrounded())
             {
                 skidmark.emitting = Mathf.Abs(velocity.x) > _controller.DriftSteerThreshold;
+
+                if (!burnOutSmoke) return;
+                burnOutSmoke.gameObject.SetActive(skidmark.emitting);
             }
             else
             {

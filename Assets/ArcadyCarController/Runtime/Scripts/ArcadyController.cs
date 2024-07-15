@@ -13,6 +13,7 @@ namespace Arcady
         
         [Header("Car Properties")]
         [SerializeField] private float maxSpeed = 70f;
+        [SerializeField] private float decelerationSpeed = 20f;
         [SerializeField] private float accelerationForce= 100f;
         [SerializeField] private float decelerationForce= 50f;
         [SerializeField] private float turnTorque = 50f;
@@ -34,9 +35,6 @@ namespace Arcady
         [Space(5f)]
         [SerializeField] private float maxBodyTiltAngle = 20f;
         [Space(5f)]
-        [SerializeField] private float minSpeedThreshold = 20f;
-        [SerializeField] private float maxSpeedThreshold = 60f;
-        [SerializeField] private float adjustCenterOfMassOffset = -0.5f;
         [SerializeField] private Transform centerOfMassAirborne;
         [Space(5f)]
         [SerializeField] private float gravity = 15f;
@@ -65,7 +63,8 @@ namespace Arcady
 
         private Vector3 _lateralVelocity;
 
-        private float _speed;
+        private float _accelerationSpeed;
+        private float _decelerationSpeed;
         private float _accelerationNetForce;
         private float _decelerationNetForce;
         private float _steeringNetForce;
@@ -106,9 +105,10 @@ namespace Arcady
 
         private void FixedUpdate()
         {
-            _carVelocity = carBody.InverseTransformDirection(_carRb.velocity);
-            _speed = _carVelocity.magnitude / maxSpeed;
-            _lateralVelocity = Vector3.Project(_carRb.velocity, carBody.right);
+            _carVelocity = transform.InverseTransformDirection(_carRb.velocity);
+            _accelerationSpeed = _carVelocity.magnitude / maxSpeed;
+            _decelerationSpeed = _carVelocity.magnitude / decelerationSpeed;
+            _lateralVelocity = Vector3.Project(_carRb.velocity, transform.right);
             
             if (IsGrounded())
             {
@@ -128,9 +128,9 @@ namespace Arcady
 
         private void HandleGroundedMovement()
         {
-            _accelerationNetForce = accelerationCurve.Evaluate(_speed) * accelerationForce * 1000f * Time.fixedDeltaTime;
-            _decelerationNetForce = reversingCurve.Evaluate(_speed) * decelerationForce * 1000f * Time.fixedDeltaTime;
-            _steeringNetForce = turnCurve.Evaluate(Mathf.Abs(_speed)) * Mathf.Sign(_carVelocity.z) * turnTorque * 1000f * Time.fixedDeltaTime;
+            _accelerationNetForce = accelerationCurve.Evaluate(_accelerationSpeed) * accelerationForce * 1000f * Time.fixedDeltaTime;
+            _decelerationNetForce = reversingCurve.Evaluate(_decelerationSpeed) * decelerationForce * 1000f * Time.fixedDeltaTime;
+            _steeringNetForce = turnCurve.Evaluate(Mathf.Abs(_accelerationSpeed)) * Mathf.Sign(_carVelocity.z) * turnTorque * 1000f * Time.fixedDeltaTime;
 
             if (inputReader.Brake > 0.1f)
             {
@@ -141,33 +141,38 @@ namespace Arcady
             else
             {
                 _carRb.constraints = RigidbodyConstraints.None;
-                _carRb.AddForceAtPosition(carBody.forward * (_accelerationNetForce * inputReader.Move.y), accelerationPoint.position, ForceMode.Acceleration);
-                
+                if (inputReader.Move.y > 0.1f)
+                {
+                    _carRb.AddForceAtPosition(transform.forward * _accelerationNetForce, accelerationPoint.position, ForceMode.Acceleration);
+                }
+                else if (inputReader.Move.y < -0.1f)
+                {
+                    _carRb.AddForceAtPosition(-transform.forward * _decelerationNetForce, accelerationPoint.position, ForceMode.Acceleration);
+                }
             }
             
             _steerAngle = inputReader.Move.x * _steeringNetForce;
-            if (_speed > 0.1f)
+            if (_accelerationSpeed > 0.1f)
             {
                 _carRb.AddTorque(carBody.up * _steerAngle);  
             }
         }
-
         
         private void HandleDrifting()
         {
             if (!IsDrifting()) return;
 
-            float driftForceFactor = driftingCurve.Evaluate(_speed);
-            Vector3 driftDirection = Quaternion.AngleAxis(30 * -Mathf.Sign(inputReader.Move.x), Vector3.up) * carBody.forward;
+            float driftForceFactor = driftingCurve.Evaluate(_accelerationSpeed);
+            Vector3 driftDirection = Quaternion.AngleAxis(30 * -Mathf.Sign(inputReader.Move.x), Vector3.up) * transform.forward;
             _carRb.AddForce(driftDirection * (driftForce * driftForceFactor), ForceMode.Acceleration);
 
-            float controlFactor = Mathf.Lerp(1f, driftControl, _speed);
+            float controlFactor = Mathf.Lerp(1f, driftControl, _accelerationSpeed);
             _carRb.AddForce(-_carRb.velocity * (1f - controlFactor), ForceMode.Acceleration);
         }
         
         private void ApplyAirborneMovement()
         {
-            _carRb.AddForce(-transform.up * (gravity * _carRb.mass));
+            _carRb.AddForce(-carBody.up * (gravity * _carRb.mass));
             
             float airborneSteerAngle = (inputReader.Move.x * _steeringNetForce) / 2f; 
             _carRb.AddTorque(carBody.up * airborneSteerAngle);
@@ -193,7 +198,7 @@ namespace Arcady
             float tiltAmount = Mathf.Clamp(_lateralVelocity.magnitude / maxSpeed, 0, 1) * Mathf.Sign(inputReader.Move.x) * maxBodyTiltAngle;
             
             Quaternion targetRotation = Quaternion.FromToRotation(_carRb.transform.up, _groundRaycastHit.normal) * _carRb.transform.rotation;
-            targetRotation = Quaternion.AngleAxis(tiltAmount, carBody.forward) * targetRotation;
+            targetRotation = Quaternion.AngleAxis(tiltAmount, transform.forward) * targetRotation;
 
             _carRb.MoveRotation(Quaternion.Slerp(_carRb.rotation, targetRotation, Time.fixedDeltaTime));
         }
@@ -201,29 +206,15 @@ namespace Arcady
         private void ApplyDownForce()
         {
              float speedFactor = Mathf.Clamp01(_carRb.velocity.magnitude / maxSpeed);
-             float lateralG = Mathf.Abs(Vector3.Dot(_carRb.velocity, transform.right));
+             float lateralG = Mathf.Abs(Vector3.Dot(_carRb.velocity, carBody.right));
              float downForceFactor = Mathf.Max(speedFactor, lateralG / sideGrip);
              
-            _carRb.AddForce(-transform.up * (downForce * _carRb.mass * downForceFactor));
+            _carRb.AddForce(-carBody.up * (downForce * _carRb.mass * downForceFactor));
         }
 
         private void AdjustCenterOfMass()
         {
-            if (IsGrounded())
-            {
-                float speedFactor = Mathf.InverseLerp(minSpeedThreshold, maxSpeedThreshold, _carRb.velocity.magnitude);
-                float verticalInputFactor = Mathf.Abs(inputReader.Move.y) > 0.1f ? Mathf.Sign(inputReader.Move.y) : 0f;
-                Vector3 centerOfMassAdjustment = new Vector3(
-                    0f, 
-                    0f, 
-                    verticalInputFactor * speedFactor * adjustCenterOfMassOffset
-                );
-                _carRb.centerOfMass = _originalCenterOfMass + centerOfMassAdjustment;
-            }
-            else
-            {
-                _carRb.centerOfMass = centerOfMassAirborne.localPosition;
-            }
+            _carRb.centerOfMass = IsGrounded() ? _originalCenterOfMass : centerOfMassAirborne.localPosition;
         }
 
         #endregion
