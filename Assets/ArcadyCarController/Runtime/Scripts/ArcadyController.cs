@@ -128,19 +128,15 @@ namespace Arcady
 
         private void HandleGroundedMovement()
         {
-            _accelerationNetForce = accelerationCurve.Evaluate(_accelerationSpeed) * accelerationForce * 1000f * Time.fixedDeltaTime;
-            _decelerationNetForce = reversingCurve.Evaluate(_decelerationSpeed) * decelerationForce * 1000f * Time.fixedDeltaTime;
-            _steeringNetForce = turnCurve.Evaluate(Mathf.Abs(_accelerationSpeed)) * Mathf.Sign(_carVelocity.z) * turnTorque * 1000f * Time.fixedDeltaTime;
-
-            if (inputReader.Brake > 0.1f)
+            AccelerationAndDeceleration();
+            Braking();
+            Steering();
+            
+            void AccelerationAndDeceleration()
             {
-                _carRb.constraints = RigidbodyConstraints.FreezeRotationX;
-                var newZ = Mathf.SmoothDamp(_carRb.velocity.z, 0, ref _breakVelocity, 1f);
-                _carRb.velocity = new Vector3(_carRb.velocity.x, _carRb.velocity.y, newZ);
-            }
-            else
-            {
-                _carRb.constraints = RigidbodyConstraints.None;
+                _accelerationNetForce = accelerationCurve.Evaluate(_accelerationSpeed) * accelerationForce * 1000f * Time.fixedDeltaTime;
+                _decelerationNetForce = reversingCurve.Evaluate(_decelerationSpeed) * decelerationForce * 1000f * Time.fixedDeltaTime;
+                
                 if (inputReader.Move.y > 0.1f)
                 {
                     _carRb.AddForceAtPosition(transform.forward * _accelerationNetForce, accelerationPoint.position, ForceMode.Acceleration);
@@ -151,10 +147,24 @@ namespace Arcady
                 }
             }
             
-            _steerAngle = inputReader.Move.x * _steeringNetForce;
-            if (_accelerationSpeed > 0.1f)
+            void Braking()
             {
-                _carRb.AddTorque(carBody.up * _steerAngle);  
+                if (inputReader.Brake > 0.1f)
+                {
+                    _carRb.constraints = RigidbodyConstraints.FreezeRotationX;
+                    var newZ = Mathf.SmoothDamp(_carRb.velocity.z, 0, ref _breakVelocity, 1f);
+                    _carRb.velocity = new Vector3(_carRb.velocity.x, _carRb.velocity.y, newZ);
+                }
+            }
+
+            void Steering()
+            {
+                _steeringNetForce = Mathf.Clamp01(turnCurve.Evaluate(Mathf.Abs(_accelerationSpeed))) * Mathf.Sign(_carVelocity.z) * turnTorque * 1000f * Time.fixedDeltaTime;
+                _steerAngle = inputReader.Move.x * _steeringNetForce;
+                if (_accelerationSpeed > 0.1f)
+                {
+                    _carRb.AddTorque(carBody.up * _steerAngle);  
+                }  
             }
         }
         
@@ -189,7 +199,7 @@ namespace Arcady
                 float dragMagnitude = -_lateralVelocity.magnitude * inputReader.Brake > 0.1f ? brakingCoefficient : dragCoefficient;
             
                 Vector3 dragForce = _lateralVelocity.normalized * dragMagnitude;
-                _carRb.AddForceAtPosition(dragForce, _carRb.worldCenterOfMass, ForceMode.Acceleration);
+                _carRb.AddForceAtPosition(dragForce, _carRb.centerOfMass);
             }
         }
         

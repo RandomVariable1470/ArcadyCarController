@@ -9,8 +9,39 @@
       <change beforePath="$PROJECT_DIR$/Assets/ArcadyCarController/Runtime/Demo.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/ArcadyCarController/Runtime/Demo.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/ArcadyCarController/Runtime/Scripts/ArcadyController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/ArcadyCarController/Runtime/Scripts/ArcadyController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/ArcadyCarController/Runtime/Scripts/Skidmakrs.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/ArcadyCarController/Runtime/Scripts/Skidmakrs.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/ArcadyCarController/Runtime/TestTerrain.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/ArcadyCarController/Runtime/TestTerrain.asset.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Sedan.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Sedan.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Standard Assets/ParticleSystems/Prefabs/Afterburner.prefab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Standard Assets/ParticleSystems/Prefabs/Afterburner.prefab.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Standard Assets/ParticleSystems/Prefabs/DustStorm.prefab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Standard Assets/ParticleSystems/Prefabs/DustStorm.prefab.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Standard Assets/ParticleSystems/Prefabs/DustStormMobile.prefab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Standard Assets/ParticleSystems/Prefabs/DustStormMobile.prefab.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Standard Assets/ParticleSystems/Prefabs/Explosion.prefab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Standard Assets/ParticleSystems/Prefabs/Explosion.prefab.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Standard Assets/ParticleSystems/Prefabs/ExplosionMobile.prefab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Standard Assets/ParticleSystems/Prefabs/ExplosionMobile.prefab.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Standard Assets/ParticleSystems/Prefabs/FireComplex.prefab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Standard Assets/ParticleSystems/Prefabs/FireComplex.prefab.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Standard Assets/ParticleSystems/Prefabs/FireMobile.prefab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Standard Assets/ParticleSystems/Prefabs/FireMobile.prefab.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Standard Assets/ParticleSystems/Prefabs/Fireworks.prefab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Standard Assets/ParticleSystems/Prefabs/Fireworks.prefab.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Standard Assets/ParticleSystems/Prefabs/Flare.prefab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Standard Assets/ParticleSystems/Prefabs/Flare.prefab.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Standard Assets/ParticleSystems/Prefabs/FlareMobile.prefab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Standard Assets/ParticleSystems/Prefabs/FlareMobile.prefab.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Standard Assets/ParticleSystems/Prefabs/Hose.prefab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Standard Assets/ParticleSystems/Prefabs/Hose.prefab.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Standard Assets/ParticleSystems/Prefabs/HoseMobile.prefab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Standard Assets/ParticleSystems/Prefabs/HoseMobile.prefab.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Standard Assets/ParticleSystems/Prefabs/Smoke.prefab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Standard Assets/ParticleSystems/Prefabs/Smoke.prefab.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Standard Assets/ParticleSystems/Prefabs/Steam.prefab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Standard Assets/ParticleSystems/Prefabs/Steam.prefab.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Standard Assets/ParticleSystems/Prefabs/SteamMobile.prefab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Standard Assets/ParticleSystems/Prefabs/SteamMobile.prefab.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Standard Assets/ParticleSystems/Prefabs/WildFire.prefab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Standard Assets/ParticleSystems/Prefabs/WildFire.prefab.meta" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -115,6 +146,9 @@
       <workItem from="1721024073455" duration="92000" />
       <workItem from="1721024216493" duration="852000" />
       <workItem from="1721026150279" duration="1850000" />
+      <workItem from="1721028314614" duration="356000" />
+      <workItem from="1721051117884" duration="73000" />
+      <workItem from="1721051254866" duration="2012000" />
     </task>
     <servers />
   </component>
