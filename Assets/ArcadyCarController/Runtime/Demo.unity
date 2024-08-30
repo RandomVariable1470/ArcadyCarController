@@ -1953,11 +1953,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 929031044817935289, guid: 9637509331e786342be92117f655ba8f,
         type: 3}
-      propertyPath: driftControl
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 929031044817935289, guid: 9637509331e786342be92117f655ba8f,
-        type: 3}
       propertyPath: decelerationForce
       value: 3
       objectReference: {fileID: 0}
@@ -2030,11 +2025,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LinearLimit.limit
       value: 0.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 2031609032984238484, guid: 9637509331e786342be92117f655ba8f,
-        type: 3}
-      propertyPath: m_Volume
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2060799949116564088, guid: 9637509331e786342be92117f655ba8f,
         type: 3}
@@ -2135,11 +2125,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Sedan
-      objectReference: {fileID: 0}
-    - target: {fileID: 5159378996894118708, guid: 9637509331e786342be92117f655ba8f,
-        type: 3}
-      propertyPath: m_Volume
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5256791704354470607, guid: 9637509331e786342be92117f655ba8f,
         type: 3}
@@ -2320,11 +2305,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LinearLimit.limit
       value: 0.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 8680970673912559630, guid: 9637509331e786342be92117f655ba8f,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.35
       objectReference: {fileID: 0}
     - target: {fileID: 8950962743202079145, guid: 9637509331e786342be92117f655ba8f,
         type: 3}

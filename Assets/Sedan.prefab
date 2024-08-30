@@ -672,6 +672,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skidmark: {fileID: 2729720122057338716}
+  burnOutSmoke: {fileID: 0}
 --- !u!1 &3487839131433338972
 GameObject:
   m_ObjectHideFlags: 0
@@ -1243,6 +1244,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skidmark: {fileID: 1379358643838388281}
+  burnOutSmoke: {fileID: 0}
 --- !u!1 &4781837341246026425
 GameObject:
   m_ObjectHideFlags: 0
@@ -1443,6 +1445,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skidmark: {fileID: 6099037576044776096}
+  burnOutSmoke: {fileID: 0}
 --- !u!1 &5078215842348264315
 GameObject:
   m_ObjectHideFlags: 0
@@ -2152,6 +2155,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skidmark: {fileID: 6866322666904357046}
+  burnOutSmoke: {fileID: 0}
 --- !u!1 &6823638042052735070
 GameObject:
   m_ObjectHideFlags: 0
